@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setTasks, toggleTaskStatus, deleteTask } from '@/store/tasksSlice';
 import Link from 'next/link';
@@ -7,6 +7,7 @@ import type { RootState, AppDispatch } from '@/store';
 export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
   const tasks = useSelector((state: RootState) => state.tasks.tasks);
+  const [selectedDropdownItem, setSelectedDropdownItem] = useState(0);
 
   useEffect(() => {
     async function fetchTasks() {
@@ -19,6 +20,14 @@ export default function Home() {
     }
   }, [dispatch, tasks]);
 
+  const handleDropdownClick = (taskId: number) => {
+    if (selectedDropdownItem) {
+      setSelectedDropdownItem(0)
+    } else {
+      setSelectedDropdownItem(taskId)
+    }
+  }
+
   return (
     <div className="container my-4">
       <h1 className="text-center mb-4">To-Do List</h1>
@@ -28,32 +37,78 @@ export default function Home() {
           <button className="btn btn-primary">Add New Task</button>
         </Link>
       </div>
-      <ul className="list-group">
-        {tasks.map((task) => (
-          <li
-            key={task.id}
-            className={`list-group-item d-flex justify-content-between align-items-center`}
-          >
-            <Link href={{ pathname: '/tasks/taskDetail', query: { id: task.id } }} className='text-decoration-none'>
-              {task.title}
-            </Link>
-            <div>
-              <button
-                className="btn btn-sm btn-outline-success me-2"
-                onClick={() => dispatch(toggleTaskStatus(task.id))}
-              >
-                {task.completed ? 'Mark Incomplete' : 'Mark Complete'}
-              </button>
-              <button
-                className="btn btn-sm btn-outline-danger"
-                onClick={() => dispatch(deleteTask(task.id))}
-              >
-                Delete
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <table className="table table-bordered table-striped table-hover">
+        <thead className="table-primary text-center">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tasks.map((task, index) => (
+            <tr key={task.id}>
+              <th scope="row" className='text-center'>{index + 1}</th>
+              <td>
+                <Link
+                  href={{ pathname: '/tasks/taskDetail', query: { id: task.id } }}
+                  className="text-decoration-none text-dark"
+                >
+                  {task.title}
+                </Link>
+              </td>
+              <td className='text-center'>
+                { task.completed ? 
+                  <button className='btn btn-sm btn-success'>
+                    Completed
+                  </button> 
+                  : 
+                  <button className='btn btn-sm btn-danger'>
+                    Incomplete
+                  </button> 
+                }
+              </td>
+              <td className="text-center">
+                <div className="dropdown">
+                  <button
+                    className="btn btn-secondary btn-sm dropdown-toggle"
+                    type="button"
+                    id={`dropdownMenuButton-${task.id}`}
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    onClick={() => handleDropdownClick(task.id)}
+                  >
+                    Actions
+                  </button>
+                  <ul className={`dropdown-menu ${
+                    selectedDropdownItem === task.id ? 'show' : 'none'
+                  }`} >
+                    <li>
+                      <button
+                        className={`dropdown-item ${
+                          task.completed ? 'text-warning' : 'text-primary'
+                        }`}
+                        onClick={() => dispatch(toggleTaskStatus(task.id))}
+                      >
+                        {task.completed ? 'Mark Incomplete' : 'Mark Complete'}
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item text-danger"
+                        onClick={() => dispatch(deleteTask(task.id))}
+                      >
+                        Delete
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 
