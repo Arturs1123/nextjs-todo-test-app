@@ -22,10 +22,18 @@ export default function Home() {
 
   const handleDropdownClick = (taskId: number) => {
     if (selectedDropdownItem) {
-      setSelectedDropdownItem(0)
+      if (selectedDropdownItem === taskId) {
+        setSelectedDropdownItem(0)
+      } else {
+        setSelectedDropdownItem(taskId)
+      }
     } else {
       setSelectedDropdownItem(taskId)
     }
+  }
+
+  const handleClickOutsideDropdown = () => {
+    setSelectedDropdownItem(0)
   }
 
   return (
@@ -89,7 +97,10 @@ export default function Home() {
                         className={`dropdown-item ${
                           task.completed ? 'text-warning' : 'text-primary'
                         }`}
-                        onClick={() => dispatch(toggleTaskStatus(task.id))}
+                        onClick={() => {
+                          handleClickOutsideDropdown();
+                          dispatch(toggleTaskStatus(task.id))
+                        }}
                       >
                         {task.completed ? 'Mark Incomplete' : 'Mark Complete'}
                       </button>
