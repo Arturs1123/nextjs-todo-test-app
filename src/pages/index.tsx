@@ -20,22 +20,41 @@ export default function Home() {
   }, [dispatch, tasks]);
 
   return (
-    <div>
-      <h1>To-Do List</h1>
-      <Link href="/tasks/addTask">Add New Task</Link>
-      <ul>
-        {tasks.map(task => (
-          <li key={task.id}>
-            <Link href={{ pathname: '/tasks/taskDetail', query: { id: task.id } }}>
+    <div className="container my-4">
+      <h1 className="text-center mb-4">To-Do List</h1>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2>Tasks</h2>
+        <Link href="/tasks/addTask">
+          <button className="btn btn-primary">Add New Task</button>
+        </Link>
+      </div>
+      <ul className="list-group">
+        {tasks.map((task) => (
+          <li
+            key={task.id}
+            className={`list-group-item d-flex justify-content-between align-items-center`}
+          >
+            <Link href={{ pathname: '/tasks/taskDetail', query: { id: task.id } }} className='text-decoration-none'>
               {task.title}
             </Link>
-            <button onClick={() => dispatch(toggleTaskStatus(task.id))}>
-              {task.completed ? 'Mark Incomplete' : 'Mark Complete'}
-            </button>
-            <button onClick={() => dispatch(deleteTask(task.id))}>Delete</button>
+            <div>
+              <button
+                className="btn btn-sm btn-outline-success me-2"
+                onClick={() => dispatch(toggleTaskStatus(task.id))}
+              >
+                {task.completed ? 'Mark Incomplete' : 'Mark Complete'}
+              </button>
+              <button
+                className="btn btn-sm btn-outline-danger"
+                onClick={() => dispatch(deleteTask(task.id))}
+              >
+                Delete
+              </button>
+            </div>
           </li>
         ))}
       </ul>
     </div>
   );
+
 }

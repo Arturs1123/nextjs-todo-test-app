@@ -16,16 +16,23 @@ export default function AddTask() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>Add New Task</h1>
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Task title"
-        required
-      />
-      <button type="submit">Save</button>
-    </form>
+    <div className="container my-4">
+      <h1 className="text-center mb-4">Add New Task</h1>
+      <form onSubmit={handleSubmit} className="card p-4">
+        <div className="mb-3">
+          <label htmlFor="taskTitle" className="form-label">Task Title</label>
+          <input
+            type="text"
+            id="taskTitle"
+            className="form-control"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter task title"
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">Save</button>
+      </form>
+    </div>
   );
 }
